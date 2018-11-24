@@ -94,7 +94,7 @@ STRATEGY is a member of the functions:
     (t                                    0)))
 
 (defun tournament (strategy-1 strategy-2 &optional (matches 1))
-  ""
+  "Comparing strategies between player and opponent."
   (loop repeat matches
      for score = (play strategy-1 strategy-2)
      when (= score 1) sum 1 into player-score
