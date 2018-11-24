@@ -24,17 +24,16 @@
   (make-array (list n n) :element-type `(integer ,empty ,circle) :initial-element empty))
 
 ;;; Output
-(defun print-board (board &optional (print t))
+(defun print-board (board)
   "Print a board."
-  (when print
-    (let ((size (first (array-dimensions board))))
-      (format t "~2&~3T")
-      (loop for i below size do
-	    (format t "~A " (code-char (+ (char-code #\A) i))))
-      (loop for i below size do
-	    (format t "~&~2D" (1+ i))
-	    (loop for j below size do
-		  (format t " ~A" (player-name-of (aref board i j))))))))
+  (let ((size (first (array-dimensions board))))
+    (format t "~2&~3T")
+    (loop for i below size do
+	 (format t "~A " (code-char (+ (char-code #\A) i))))
+    (loop for i below size do
+	 (format t "~&~2D" (1+ i))
+	 (loop for j below size do
+	      (format t " ~A" (player-name-of (aref board i j)))))))
 
 (defun player-name-of (player)
   "Return character of current player or of empty field."
@@ -55,7 +54,7 @@
      when (legal-p move board) collect move))
 
 ;;; Play it
-(defun play (strategy-1 strategy-2 &key (size 3) (print nil))
+(defun play (strategy-1 strategy-2 &key (size 3) print-p)
   "Play the game of Tic-Tac-Toe.
 STRATEGY is a member of the functions:
   HUMAN               Human player
@@ -63,14 +62,14 @@ STRATEGY is a member of the functions:
   ALPHA-BETA-STRATEGY Computer plays with Alpha-Beta strategy
   MINIMAX-STRATEGY    Computer plays with Minimax strategy"
   (let ((board (initial-board size)))
-    (print-board board print)
+    (when print-p (print-board board))
     (loop
        repeat (array-total-size board)           ; needed for draw
        for player = cross then (opponent player) ; X makes always the first move
        for strategy = (if (eql player cross) strategy-1 strategy-2)
        for move = (funcall strategy player board)
        do (place-piece move player board)
-	 (print-board board print)
+	 (when print-p (print-board board))
        until (or (has-won-p cross board) (has-won-p circle board)))
     (evaluate cross board)))
 
